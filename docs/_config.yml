@@ -1,0 +1,58 @@
+# Configuration GitHub Pages pour TimeSheet App
+# Optimisé pour Flutter Web et accès à la caméra
+
+# Configuration de base
+title: "TimeSheet App"
+description: "Application de gestion des temps de travail avec scanner QR Code"
+author: "ASOFES Team"
+
+# Configuration Jekyll
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+# Configuration des métadonnées
+seo:
+  title: "TimeSheet App - Gestion des temps de travail"
+  description: "Application professionnelle de pointage avec scanner QR Code, historique détaillé et statistiques"
+  image: "/icons/Icon-512.png"
+  type: "website"
+
+# Configuration des headers HTTP
+# Note: GitHub Pages ne supporte pas les headers personnalisés
+# Mais la configuration Flutter dans index.html gère la caméra
+
+# Configuration de la navigation
+nav:
+  - title: "Accueil"
+    url: "/"
+  - title: "Scanner QR"
+    url: "/#scanner"
+  - title: "Historique"
+    url: "/#historique"
+  - title: "Profil"
+    url: "/#profil"
+
+# Configuration des assets
+assets:
+  - "assets/"
+  - "icons/"
+  - "canvaskit/"
+
+# Configuration de la performance
+compress_html:
+  clippings: all
+  comments: all
+  endings: all
+  profile: false
+  startings: [html, head, body]
+
+# Configuration de la sécurité
+security:
+  content_security_policy: "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob:; img-src 'self' data: blob:; media-src 'self' blob:;"
+
+# Configuration de la caméra (via meta tags dans index.html)
+camera:
+  permissions: "camera, microphone"
+  https_required: true
+  cross_origin: "require-corp"
