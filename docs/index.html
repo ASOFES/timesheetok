@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <base href="/">
+  <base href="/timesheetok/">
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
@@ -114,11 +114,13 @@
   <!-- Conteneur Flutter (caché pendant le chargement) -->
   <div id="flutter-app"></div>
 
-  <!-- Script Flutter simplifié et robuste -->
+  <!-- Script Flutter avec chemins corrigés pour GitHub Pages -->
   <script src="flutter.js" defer></script>
   <script>
-    // Configuration Flutter Web
+    // Configuration Flutter Web pour GitHub Pages
     window.addEventListener('load', function() {
+      console.log('Page chargée, démarrage de Flutter...');
+      
       // Délai de sécurité pour s'assurer que Flutter est prêt
       setTimeout(function() {
         try {
@@ -159,7 +161,7 @@
           console.error('Erreur lors du démarrage:', error);
           showError('Erreur lors du démarrage de l\'application');
         }
-      }, 1000); // Délai de 1 seconde
+      }, 2000); // Délai de 2 secondes pour GitHub Pages
     });
 
     // Fonction pour afficher les erreurs
