@@ -20,8 +20,12 @@
   <title>TimeSheet App</title>
   <link rel="manifest" href="manifest.json">
 
-  <!-- Configuration pour la caméra -->
+  <!-- Configuration optimisée pour la caméra -->
   <meta name="permissions-policy" content="camera=*, microphone=*, geolocation=*">
+  
+  <!-- Configuration de sécurité pour la caméra -->
+  <meta http-equiv="Cross-Origin-Embedder-Policy" content="unsafe-none">
+  <meta http-equiv="Cross-Origin-Opener-Policy" content="unsafe-none">
 
   <style>
     body {
@@ -94,6 +98,31 @@
       width: 100%;
       height: 100vh;
     }
+
+    /* Styles pour les messages de permission caméra */
+    .camera-permission {
+      display: none;
+      background: rgba(255,255,255,0.1);
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .camera-permission button {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1.1em;
+      margin: 10px;
+    }
+
+    .camera-permission button:hover {
+      background: #45a049;
+    }
   </style>
 </head>
 <body>
@@ -109,17 +138,28 @@
       <p>L'application n'a pas pu démarrer. Vérifiez votre connexion internet et réessayez.</p>
       <button onclick="location.reload()">Réessayer</button>
     </div>
+
+    <!-- Message de permission caméra (caché par défaut) -->
+    <div id="camera-permission" class="camera-permission">
+      <h3>Permission Caméra Requise</h3>
+      <p>Pour utiliser le scanner QR Code, l'application a besoin d'accéder à votre caméra.</p>
+      <button onclick="requestCameraPermission()">Autoriser la Caméra</button>
+      <button onclick="location.reload()">Recharger</button>
+    </div>
   </div>
 
   <!-- Conteneur Flutter (caché pendant le chargement) -->
   <div id="flutter-app"></div>
 
-  <!-- Script Flutter avec configuration simplifiée et robuste -->
+  <!-- Script Flutter avec configuration optimisée pour la caméra -->
   <script src="flutter.js" defer></script>
   <script>
-    // Configuration Flutter Web simplifiée et robuste
+    // Configuration Flutter Web optimisée pour la caméra
     window.addEventListener('load', function() {
       console.log('Page chargée, démarrage de Flutter...');
+      
+      // Vérifier les permissions caméra avant de démarrer Flutter
+      checkCameraPermissions();
       
       // Délai de sécurité pour s'assurer que Flutter est prêt
       setTimeout(function() {
@@ -161,11 +201,48 @@
       }, 2000); // Délai de 2 secondes pour GitHub Pages
     });
 
+    // Fonction pour vérifier les permissions caméra
+    function checkCameraPermissions() {
+      if (navigator.permissions && navigator.permissions.query) {
+        navigator.permissions.query({name: 'camera'}).then(function(result) {
+          console.log('Permission caméra:', result.state);
+          if (result.state === 'denied') {
+            showCameraPermission();
+          }
+        });
+      }
+    }
+
+    // Fonction pour demander la permission caméra
+    function requestCameraPermission() {
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia({video: true})
+          .then(function(stream) {
+            console.log('Caméra autorisée !');
+            stream.getTracks().forEach(track => track.stop());
+            document.getElementById('camera-permission').style.display = 'none';
+            location.reload();
+          })
+          .catch(function(error) {
+            console.error('Erreur permission caméra:', error);
+            showError('Impossible d\'accéder à la caméra. Vérifiez les permissions du navigateur.');
+          });
+      } else {
+        showError('Votre navigateur ne supporte pas l\'accès à la caméra.');
+      }
+    }
+
     // Fonction pour afficher les erreurs
     function showError(message) {
       document.getElementById('loading').style.display = 'none';
       document.getElementById('error').style.display = 'block';
       document.querySelector('#error p').textContent = message;
+    }
+
+    // Fonction pour afficher la demande de permission caméra
+    function showCameraPermission() {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('camera-permission').style.display = 'block';
     }
 
     // Gestion des erreurs globales
