@@ -114,10 +114,10 @@
   <!-- Conteneur Flutter (caché pendant le chargement) -->
   <div id="flutter-app"></div>
 
-  <!-- Script Flutter avec chemins corrigés pour GitHub Pages -->
+  <!-- Script Flutter avec configuration simplifiée et robuste -->
   <script src="flutter.js" defer></script>
   <script>
-    // Configuration Flutter Web pour GitHub Pages
+    // Configuration Flutter Web simplifiée et robuste
     window.addEventListener('load', function() {
       console.log('Page chargée, démarrage de Flutter...');
       
@@ -128,11 +128,8 @@
           if (typeof _flutter !== 'undefined' && _flutter.loader) {
             console.log('Flutter détecté, démarrage...');
             
-            // Démarrer Flutter avec configuration simple
+            // Démarrer Flutter avec configuration simple (sans serviceWorker)
             _flutter.loader.loadEntrypoint({
-              serviceWorker: {
-                serviceWorkerVersion: serviceWorkerVersion,
-              },
               onEntrypointLoaded: function(engineInitializer) {
                 console.log('Entrypoint chargé, initialisation...');
                 
