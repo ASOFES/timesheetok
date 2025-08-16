@@ -1,19 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
   <base href="/">
 
   <meta charset="UTF-8">
@@ -33,112 +20,165 @@
   <title>TimeSheet App</title>
   <link rel="manifest" href="manifest.json">
 
-  <!-- Configuration pour la caméra et la sécurité -->
+  <!-- Configuration pour la caméra -->
   <meta name="permissions-policy" content="camera=*, microphone=*, geolocation=*">
-  <meta http-equiv="Cross-Origin-Embedder-Policy" content="require-corp">
-  <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin">
 
-  <!-- Configuration de sécurité pour HTTPS -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob:; img-src 'self' data: blob:; media-src 'self' blob:;">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
 
-  <!-- Préchargement des ressources critiques -->
-  <link rel="preload" href="flutter.js" as="script">
-  <link rel="preload" href="main.dart.js" as="script">
+    .loading-container {
+      text-align: center;
+    }
 
-  <!-- Configuration pour éviter les erreurs de chargement -->
-  <script>
-    // Configuration globale pour Flutter Web
-    window.flutterConfiguration = {
-      canvasKitBaseUrl: "/canvaskit/"
-    };
-
-    // Gestion des erreurs de chargement
-    window.addEventListener('error', function(e) {
-      console.error('Erreur de chargement:', e.error);
-    });
-
-    // Gestion des erreurs non capturées
-    window.addEventListener('unhandledrejection', function(e) {
-      console.error('Promesse rejetée:', e.reason);
-    });
-  </script>
-</head>
-<body>
-  <!-- Indicateur de chargement -->
-  <div id="loading" style="
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    font-family: Arial, sans-serif;
-    z-index: 9999;
-  ">
-    <div style="
+    .spinner {
       width: 80px;
       height: 80px;
       border: 4px solid rgba(255,255,255,0.3);
       border-top: 4px solid white;
       border-radius: 50%;
       animation: spin 1s linear infinite;
-      margin-bottom: 20px;
-    "></div>
-    <h2>TimeSheet App</h2>
-    <p>Chargement en cours...</p>
-  </div>
+      margin: 0 auto 20px;
+    }
 
-  <style>
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-    
-    /* Masquer l'indicateur de chargement une fois Flutter chargé */
-    .flutter-loaded #loading {
+
+    h1 {
+      margin: 0 0 10px 0;
+      font-size: 2.5em;
+    }
+
+    p {
+      margin: 0;
+      font-size: 1.2em;
+      opacity: 0.9;
+    }
+
+    .error {
       display: none;
+      background: rgba(255,255,255,0.1);
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+
+    .error button {
+      background: white;
+      color: #667eea;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1em;
+      margin-top: 15px;
+    }
+
+    .error button:hover {
+      background: #f0f0f0;
+    }
+
+    #flutter-app {
+      display: none;
+      width: 100%;
+      height: 100vh;
     }
   </style>
+</head>
+<body>
+  <!-- Écran de chargement -->
+  <div id="loading" class="loading-container">
+    <div class="spinner"></div>
+    <h1>TimeSheet App</h1>
+    <p>Chargement en cours...</p>
+    
+    <!-- Message d'erreur (caché par défaut) -->
+    <div id="error" class="error">
+      <h3>Erreur de chargement</h3>
+      <p>L'application n'a pas pu démarrer. Vérifiez votre connexion internet et réessayez.</p>
+      <button onclick="location.reload()">Réessayer</button>
+    </div>
+  </div>
 
-  <!-- Script Flutter avec gestion d'erreur -->
+  <!-- Conteneur Flutter (caché pendant le chargement) -->
+  <div id="flutter-app"></div>
+
+  <!-- Script Flutter simplifié et robuste -->
   <script src="flutter.js" defer></script>
   <script>
-    // Configuration et démarrage de Flutter
+    // Configuration Flutter Web
     window.addEventListener('load', function() {
-      // Attendre que Flutter soit prêt
-      _flutter.loader.loadEntrypoint({
-        serviceWorker: {
-          serviceWorkerVersion: serviceWorkerVersion,
-        },
-        onEntrypointLoaded: function(engineInitializer) {
-          engineInitializer.initializeEngine().then(function(appRunner) {
-            // Masquer l'indicateur de chargement
-            document.body.classList.add('flutter-loaded');
-            // Démarrer l'application
-            appRunner.runApp();
-          }).catch(function(error) {
-            console.error('Erreur lors du démarrage de Flutter:', error);
-            document.getElementById('loading').innerHTML = `
-              <h2>Erreur de chargement</h2>
-              <p>Impossible de démarrer l'application</p>
-              <button onclick="location.reload()" style="
-                padding: 10px 20px;
-                background: white;
-                color: #667eea;
-                border: none;
-                border-radius: 5px;
-                cursor: pointer;
-                margin-top: 10px;
-              ">Réessayer</button>
-            `;
-          });
+      // Délai de sécurité pour s'assurer que Flutter est prêt
+      setTimeout(function() {
+        try {
+          // Vérifier que Flutter est disponible
+          if (typeof _flutter !== 'undefined' && _flutter.loader) {
+            console.log('Flutter détecté, démarrage...');
+            
+            // Démarrer Flutter avec configuration simple
+            _flutter.loader.loadEntrypoint({
+              serviceWorker: {
+                serviceWorkerVersion: serviceWorkerVersion,
+              },
+              onEntrypointLoaded: function(engineInitializer) {
+                console.log('Entrypoint chargé, initialisation...');
+                
+                engineInitializer.initializeEngine().then(function(appRunner) {
+                  console.log('Moteur initialisé, démarrage de l\'app...');
+                  
+                  // Masquer le chargement et afficher l'app
+                  document.getElementById('loading').style.display = 'none';
+                  document.getElementById('flutter-app').style.display = 'block';
+                  
+                  // Démarrer l'application
+                  appRunner.runApp();
+                  
+                  console.log('Application démarrée avec succès !');
+                }).catch(function(error) {
+                  console.error('Erreur lors de l\'initialisation du moteur:', error);
+                  showError('Erreur lors de l\'initialisation du moteur');
+                });
+              }
+            });
+          } else {
+            console.error('Flutter non détecté');
+            showError('Flutter n\'est pas disponible');
+          }
+        } catch (error) {
+          console.error('Erreur lors du démarrage:', error);
+          showError('Erreur lors du démarrage de l\'application');
         }
-      });
+      }, 1000); // Délai de 1 seconde
+    });
+
+    // Fonction pour afficher les erreurs
+    function showError(message) {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('error').style.display = 'block';
+      document.querySelector('#error p').textContent = message;
+    }
+
+    // Gestion des erreurs globales
+    window.addEventListener('error', function(e) {
+      console.error('Erreur JavaScript:', e.error);
+      showError('Erreur JavaScript détectée');
+    });
+
+    // Gestion des promesses rejetées
+    window.addEventListener('unhandledrejection', function(e) {
+      console.error('Promesse rejetée:', e.reason);
+      showError('Erreur de promesse détectée');
     });
   </script>
 </body>
