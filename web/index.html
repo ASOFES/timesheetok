@@ -20,12 +20,19 @@
   <title>TimeSheet App</title>
   <link rel="manifest" href="manifest.json">
 
-  <!-- Configuration optimisée pour la caméra -->
+  <!-- Configuration optimisée pour la caméra et HTTPS -->
   <meta name="permissions-policy" content="camera=*, microphone=*, geolocation=*">
   
   <!-- Configuration de sécurité pour la caméra -->
   <meta http-equiv="Cross-Origin-Embedder-Policy" content="unsafe-none">
   <meta http-equiv="Cross-Origin-Opener-Policy" content="unsafe-none">
+  
+  <!-- Forcer HTTPS pour la caméra -->
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <!-- Configuration PWA pour la caméra -->
+  <meta name="theme-color" content="#667eea">
+  <meta name="msapplication-TileColor" content="#667eea">
 
   <style>
     body {
@@ -123,6 +130,32 @@
     .camera-permission button:hover {
       background: #45a049;
     }
+
+    /* Styles pour les messages HTTPS */
+    .https-warning {
+      display: none;
+      background: rgba(255,193,7,0.2);
+      border: 1px solid #ffc107;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .https-warning button {
+      background: #ffc107;
+      color: #000;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1.1em;
+      margin: 10px;
+    }
+
+    .https-warning button:hover {
+      background: #e0a800;
+    }
   </style>
 </head>
 <body>
@@ -146,17 +179,32 @@
       <button onclick="requestCameraPermission()">Autoriser la Caméra</button>
       <button onclick="location.reload()">Recharger</button>
     </div>
+
+    <!-- Avertissement HTTPS (caché par défaut) -->
+    <div id="https-warning" class="https-warning">
+      <h3>⚠️ HTTPS Requis pour la Caméra</h3>
+      <p>La caméra nécessite une connexion sécurisée (HTTPS) pour fonctionner.</p>
+      <p>Veuillez utiliser l'URL HTTPS de l'application.</p>
+      <button onclick="redirectToHttps()">Utiliser HTTPS</button>
+      <button onclick="location.reload()">Recharger</button>
+    </div>
   </div>
 
   <!-- Conteneur Flutter (caché pendant le chargement) -->
   <div id="flutter-app"></div>
 
-  <!-- Script Flutter avec configuration optimisée pour la caméra -->
+  <!-- Script Flutter avec configuration optimisée pour la caméra et HTTPS -->
   <script src="flutter.js" defer></script>
   <script>
-    // Configuration Flutter Web optimisée pour la caméra
+    // Configuration Flutter Web optimisée pour la caméra et HTTPS
     window.addEventListener('load', function() {
       console.log('Page chargée, démarrage de Flutter...');
+      
+      // Vérifier HTTPS avant de démarrer
+      if (!isHttps()) {
+        showHttpsWarning();
+        return;
+      }
       
       // Vérifier les permissions caméra avant de démarrer Flutter
       checkCameraPermissions();
@@ -200,6 +248,26 @@
         }
       }, 2000); // Délai de 2 secondes pour GitHub Pages
     });
+
+    // Fonction pour vérifier HTTPS
+    function isHttps() {
+      return window.location.protocol === 'https:' || 
+             window.location.hostname === 'localhost' ||
+             window.location.hostname === '127.0.0.1';
+    }
+
+    // Fonction pour rediriger vers HTTPS
+    function redirectToHttps() {
+      const currentUrl = window.location.href;
+      const httpsUrl = currentUrl.replace('http:', 'https:');
+      window.location.href = httpsUrl;
+    }
+
+    // Fonction pour afficher l'avertissement HTTPS
+    function showHttpsWarning() {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('https-warning').style.display = 'block';
+    }
 
     // Fonction pour vérifier les permissions caméra
     function checkCameraPermissions() {
